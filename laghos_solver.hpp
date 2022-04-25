@@ -141,7 +141,8 @@ protected:
    MassPAOperator *VMassPA, *EMassPA;
    OperatorJacobiSmoother *VMassPA_Jprec;
    // Linear solver for energy.
-   CGSolver CG_VMass, CG_EMass;
+   CGSolver CG_VMass;
+   DGMassInverse CG_EMass;
    mutable TimingData timer;
    mutable QUpdate *qupdate;
    mutable Vector X, B, one, rhs, e_rhs;

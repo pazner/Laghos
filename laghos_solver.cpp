@@ -139,7 +139,7 @@ LagrangianHydroOperator::LagrangianHydroOperator(const int size,
    ForcePA(nullptr), VMassPA(nullptr), EMassPA(nullptr),
    VMassPA_Jprec(nullptr),
    CG_VMass(H1.GetParMesh()->GetComm()),
-   CG_EMass(L2.GetParMesh()->GetComm()),
+   CG_EMass(l2, &rho0_coeff),
    timer(p_assembly ? L2TVSize : 1),
    qupdate(nullptr),
    X(H1c.GetTrueVSize()),
@@ -262,12 +262,9 @@ LagrangianHydroOperator::LagrangianHydroOperator(const int size,
       CG_VMass.SetMaxIter(cg_max_iter);
       CG_VMass.SetPrintLevel(-1);
 
-      CG_EMass.SetOperator(*EMassPA);
-      CG_EMass.iterative_mode = false;
       CG_EMass.SetRelTol(cg_rel_tol);
       CG_EMass.SetAbsTol(0.0);
       CG_EMass.SetMaxIter(cg_max_iter);
-      CG_EMass.SetPrintLevel(-1);
    }
    else
    {
@@ -443,7 +440,8 @@ void LagrangianHydroOperator::SolveEnergy(const Vector &S, const Vector &v,
       timer.sw_cgL2.Start();
       CG_EMass.Mult(e_rhs, de);
       timer.sw_cgL2.Stop();
-      const HYPRE_Int cg_num_iter = CG_EMass.GetNumIterations();
+      // const HYPRE_Int cg_num_iter = CG_EMass.GetNumIterations();
+      const HYPRE_Int cg_num_iter = 1;
       timer.L2iter += (cg_num_iter==0) ? 1 : cg_num_iter;
       // Move the memory location of the subvector 'de' to the memory
       // location of the base vector 'dS_dt'.
